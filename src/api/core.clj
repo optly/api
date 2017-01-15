@@ -7,4 +7,4 @@
   [request]
   {:status 200
    :headers {"Content-Type" "text/html"}
-   :body "Hello World"})
+   :body "Welcome to Optly beta.  Optly will help you <strong>optimize</strong> your time with a cutting edge todo list manager."})
