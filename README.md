@@ -26,7 +26,7 @@ We use leiningen for testing.
 Run:
 
 ```
-  lein ring test
+  lein test
 ```
 
 
