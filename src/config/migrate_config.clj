@@ -1,16 +1,12 @@
 (ns config.migrate-config
   (:require
+   [config.db :as db]
    [clojure.java.jdbc :as jdbc]
    [clojure.tools.trace :refer [trace]]
    [drift.builder :refer [timestamp-migration-number-generator]]))
 
 (def db
-  {:dbtype "postgresql"
-   :dbname "postgres"
-   :host "localhost"
-   :port 15432
-   :user "postgres"
-   :password "mysecretpassword"})
+  (db/db))
 
 (defn init!
   [_]

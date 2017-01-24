@@ -16,7 +16,7 @@
                  [org.clojure/clojure "1.8.0"]
                  [ring/ring-core "1.5.1"]
                  [ring/ring-jetty-adapter "1.5.1"]
-                 [environ "1.0.3"]]
+                 [environ "1.1.0"]]
   :ring {:handler api.core/app}
   :main ^:skip-aot api.core
   :target-path "target/%s"
