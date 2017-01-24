@@ -1,9 +1,16 @@
 language: clojure
 
 lein: 2.7.1
+sudo: required
+
+services:
+  - docker
 
 script:
+  - docker run -e POSTGRES_PASSWORD=mysecretpassword -p 15432:5432 -d postgres
   - lein cljfmt check
+  - sleep 3
+  - lein migrate
   - lein test
 
 deploy:
