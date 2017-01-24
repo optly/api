@@ -1,6 +1,6 @@
 (ns api.core
   (require
-    [ring.adapter.jetty :as jetty])
+   [ring.adapter.jetty :as jetty])
   (:gen-class))
 
 (defn app

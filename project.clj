@@ -4,7 +4,8 @@
   :url "https://github.com/optly/api"
   :license {:name "Eclipse Public License"
             :url "https://www.eclipse.org/legal/epl-v10.html"}
-  :plugins [[lein-ring "0.10.0"]
+  :plugins [[lein-cljfmt "0.5.6"]
+            [lein-ring "0.10.0"]
             [lein-codox "0.10.2"]]
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [ring/ring-core "1.5.1"]

@@ -1,7 +1,16 @@
 language: clojure
-script: lein test
+
+lein: 2.7.1
+
+script:
+  - lein cljfmt check
+  - lein test
+
 deploy:
   provider: heroku
   api_key:
     secure: NqNP+62MkyTt79tEtDX+TQWM/gxUGLuBhCyOjMmAcAp3rj/U2q4zv46rMOREeQNsRs58KalrpP8yDu7Ho3NEmIlQTTxlVJeItAZAIJ8oZo2+HYNMszxsCQbX2f0yv4qiX0a2VIzazgMgRUc26AbMTtYMDCrQ/TdgRGmVfOkLI9yAfdK13zZru/3Sx4oEclxOznsJpCwH5HrCwHFeIX3hq2mG94qxRTEAk56GRPwP8HBk39/8uRNKOyuDUI5Qn44FLsMlIQcLjRYzp/vVmF8cV5zzH3qsXQBpyZDJfP1xkTyAeRsXQ9gIcgQW8R/m1HKdMty/wcoO64FgFgTvpM2PZZ63vi8QenL+yWfiGNESryw2RiXC57I66GnQGe0Evd6URr16eQPiRWaVjLmk6fZEhq6hbEb3Er6kdUsjeobDzaImtaGayok7I6v/6tS7UQZZRUjdyc3KsoOBPtAK+L+HV+EbfDIIEHc8nu2/o/DXq9mOPUalQEBaY9KEvidw4wkl/i1o8yAHP0sqP+cVfDFiC2u4bo8ziBlDBGxPjl0AQWLejUlhW6NbgnxoLA6GgJIvPR4EiupYjh4/fQkU0cU7QQWpgn6MhXOnIklXliuYRDru8KAqubHo8KI+/rCJFD4gGr/psD5Q5HDVZ+dovWOqerBd+9yxA4ZrLAp4d9AUX4g=
   app: optly-api
+
+jdk:
+  - openjdk7
