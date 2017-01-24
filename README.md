@@ -8,10 +8,16 @@ Optly web api
 ### Migrations
 
 Before you build and run the application,
-make sure *postgres* is installed and running.
+make sure **postgres** is installed and running.
 
+Start the postgres docker container:
 ```
 docker run -e POSTGRES_PASSWORD=mysecretpassword -p 15432:5432 -d postgres
+```
+
+Migrate the database to latest schema version:
+```
+lein migrate
 ```
 
 ### Build

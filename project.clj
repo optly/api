@@ -9,7 +9,7 @@
             [lein-codox "0.10.2"]
             [drift "1.5.3"]]
   :dependencies [[org.clojure/tools.trace "0.7.9"]
-                 [org.postgresql/postgresql "9.4.1212"]
+                 [org.postgresql/postgresql "9.4.1212.jre7"]
                  [org.clojure/java.jdbc "0.7.0-alpha1"]
                  [clojure.jdbc/clojure.jdbc-c3p0 "0.3.2"]
                  [org.clojure/clojure "1.8.0"]

@@ -1,8 +1,8 @@
 (ns config.migrate-config
   (:require
-    [clojure.java.jdbc :as jdbc]
-    [clojure.tools.trace :refer [trace]]
-    [drift.builder :refer [timestamp-migration-number-generator]]))
+   [clojure.java.jdbc :as jdbc]
+   [clojure.tools.trace :refer [trace]]
+   [drift.builder :refer [timestamp-migration-number-generator]]))
 
 (def db
   {:dbtype "postgresql"
@@ -15,30 +15,29 @@
 (defn init!
   [_]
   (jdbc/db-do-commands
-    db
-    ["CREATE TABLE IF NOT EXISTS
+   db
+   ["CREATE TABLE IF NOT EXISTS
      DRIFT_MIGRATIONS (VERSION BIGINT)"]))
 
 (defn current-version!
   []
   ((or
-     (->
-       (jdbc/query
-         db
-         "SELECT
+    (first
+     (jdbc/query
+      db
+      "SELECT
          VERSION
          FROM
          DRIFT_MIGRATIONS
-         ORDER BY VERSION DESC")
-       first)
-     {:version 0})
+         ORDER BY VERSION DESC"))
+    {:version 0})
    :version))
 
 (defn update-version!
   [v]
   (jdbc/insert!
-    db
-    "DRIFT_MIGRATIONS" {:version v}))
+   db
+   "DRIFT_MIGRATIONS" {:version v}))
 
 (defn migrate-config
   []
