@@ -5,6 +5,15 @@ Optly web api
 
 ## Getting Started
 
+### Migrations
+
+Before you build and run the application,
+make sure *postgres* is installed and running.
+
+```
+docker run -e POSTGRES_PASSWORD=mysecretpassword -p 15432:5432 -d postgres
+```
+
 ### Build
 
 Once you have cloned the repo and have installed
