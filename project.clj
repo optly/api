@@ -8,16 +8,26 @@
             [lein-ring "0.10.0"]
             [lein-codox "0.10.2"]
             [drift "1.5.3"]]
-  :dependencies [[drift "1.5.3"]
+  :dependencies [[clj-time "0.13.0"]
+                 [metosin/compojure-api "1.1.10"]
+                 [drift "1.5.3"]
+                 [honeysql "0.8.2"]
+                 [com.cemerick/url "0.1.1"]
+                 [clojure.jdbc/clojure.jdbc-c3p0 "0.3.2"]
                  [org.clojure/tools.trace "0.7.9"]
                  [org.postgresql/postgresql "9.4.1212.jre7"]
                  [org.clojure/java.jdbc "0.7.0-alpha1"]
-                 [clojure.jdbc/clojure.jdbc-c3p0 "0.3.2"]
                  [org.clojure/clojure "1.8.0"]
+                 [cheshire "5.7.0"]
+                 [prismatic/schema-generators "0.1.0"]
+                 [ring/ring-mock "0.3.0"]
                  [ring/ring-core "1.5.1"]
                  [ring/ring-jetty-adapter "1.5.1"]
                  [environ "1.1.0"]]
-  :ring {:handler api.core/app}
+  :ring {:handler api.core/handler}
   :main ^:skip-aot api.core
   :target-path "target/%s"
-  :profiles {:uberjar {:aot :all}})
+  :profiles {:uberjar {:aot :all
+                       :resource-paths ["swagger-ui"]}
+             :test {:dependencies [[ring/ring-mock "0.3.0"]]}
+             :dev {:dependencies [[ring/ring-mock "0.3.0"]]}})
