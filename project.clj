@@ -15,6 +15,7 @@
                  [com.cemerick/url "0.1.1"]
                  [clojure.jdbc/clojure.jdbc-c3p0 "0.3.2"]
                  [org.clojure/tools.trace "0.7.9"]
+                 [org.clojure/tools.logging "0.3.1"]
                  [org.postgresql/postgresql "9.4.1212.jre7"]
                  [org.clojure/java.jdbc "0.7.0-alpha1"]
                  [org.clojure/clojure "1.8.0"]
