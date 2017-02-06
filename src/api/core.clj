@@ -1,10 +1,19 @@
 (ns api.core
-  (require
+  (:require
+   [api.tasks.handlers :as tasks]
+   [compojure.api.sweet :refer [api context]]
    [ring.adapter.jetty :as jetty])
   (:gen-class))
 
-(defn app
-  [request]
-  {:status 200
-   :headers {"Content-Type" "text/html"}
-   :body "Welcome to Optly beta.  Optly will help you <strong>optimize</strong> your time with a cutting edge todo list manager. Don't be a loser use our app! "})
+(def handler
+  (api
+   {:swagger
+    {:ui "/"
+     :spec "/swagger.json"
+     :data {:info {:title "Optly API"
+                   :description "Optly API for task management"}
+            :tags [{:name "tasks", :description "Tasks to be managed"}]}}}
+   (context
+     "/api"
+     []
+     tasks/handlers)))

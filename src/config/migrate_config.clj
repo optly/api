@@ -1,12 +1,11 @@
 (ns config.migrate-config
   (:require
-   [config.db :as db]
+   [config.db :refer [spec]]
    [clojure.java.jdbc :as jdbc]
    [clojure.tools.trace :refer [trace]]
    [drift.builder :refer [timestamp-migration-number-generator]]))
 
-(def db
-  (db/db))
+(def db (spec))
 
 (defn init!
   [_]
@@ -24,13 +23,17 @@
       "SELECT
          VERSION
          FROM
-         DRIFT_MIGRATIONS
-         ORDER BY VERSION DESC"))
+         DRIFT_MIGRATIONS"))
     {:version 0})
    :version))
 
 (defn update-version!
   [v]
+  (jdbc/delete!
+   db
+   "DRIFT_MIGRATIONS"
+   ["1=?" 1])
+
   (jdbc/insert!
    db
    "DRIFT_MIGRATIONS" {:version v}))
