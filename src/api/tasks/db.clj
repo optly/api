@@ -1,10 +1,12 @@
 (ns api.tasks.db
   (:require
+   [clojure.tools.trace :refer [trace]]
    [clj-time.coerce :refer [to-timestamp from-sql-time]]
    [config.db :refer [connection]]
    [api.db.utils :refer [query insert merge-timestamps]]
    [api.tasks.domain :refer [Task]]
    [clj-time.core :as t]
+   [clojure.java.jdbc :as jdbc]
    [honeysql.helpers :as h]))
 
 (defn ->schema
@@ -25,13 +27,28 @@
     (query (connection)))
    (map ->schema)))
 
+(defn max-position
+  [conn]
+  (let [result (->
+                (h/select :position)
+                (h/from :tasks)
+                (h/order-by [:position :desc])
+                (h/limit 1)
+                (query conn)
+                first)]
+    (if (nil? result)
+      0
+      (result :position))))
+
 (defn insert!
   [t]
-  (let [now (->
-             (t/now)
-             to-timestamp)]
-    (->
-     t
-     (merge-timestamps now)
-     (insert (connection) :tasks)
-     ->schema)))
+  (jdbc/with-db-transaction [conn (connection)]
+    (let [now (->
+               (t/now)
+               to-timestamp)]
+      (->
+       t
+       (merge-timestamps now)
+       (assoc :position (-> conn max-position inc))
+       (insert conn :tasks)
+       ->schema))))

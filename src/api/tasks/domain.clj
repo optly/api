@@ -2,7 +2,11 @@
   (:require
    [clojure.tools.trace :refer [trace]]
    [api.domain.utils
-    :refer [add-timestamps add-id constrained-string]]
+    :refer [add-timestamps
+            remove-timestamps
+            add-id
+            remove-id
+            constrained-string]]
    [ring.swagger.json-schema :refer [describe]]
    [schema.core :refer [defschema Bool]]))
 
@@ -17,3 +21,10 @@
                 "A flag showing whether the task was completed or not")}
    add-id
    add-timestamps))
+
+(defschema CreateParams
+  (->
+   Task
+   remove-id
+   remove-timestamps
+   (dissoc :position)))

@@ -4,11 +4,11 @@
    [honeysql.core :as honeysql]
    [clojure.java.jdbc :as jdbc]))
 
-(def updated-at
-  [:updated_at "TIMESTAMP"])
+(def null
+  "NULL")
 
-(def created-at
-  [:created_at "TIMESTAMP"])
+(def not-null
+  "NOT NULL")
 
 (def bool
   "BOOL")
@@ -22,13 +22,22 @@
 (def serial
   "SERIAL")
 
+(def timestamp
+  "TIMESTAMP")
+
 (defn varchar
   [i]
   (str "VARCHAR(" i ")"))
 
 (defn id
   [n]
-  [n serial unique])
+  [n serial unique not-null])
+
+(def updated-at
+  [:updated_at timestamp not-null])
+
+(def created-at
+  [:created_at timestamp not-null])
 
 (defn create-index
   [table cols]
@@ -40,6 +49,26 @@
     (map name cols)
     (join ", "))
    ")"))
+
+(defn set-not-null
+  [tbl col]
+  (str
+   "ALTER TABLE "
+   (name tbl)
+   " ALTER COLUMN "
+   (name col)
+   " SET "
+   not-null))
+
+(defn set-null
+  [tbl col]
+  (str
+   "ALTER TABLE "
+   (name tbl)
+   " ALTER COLUMN "
+   (name col)
+   " DROP "
+   not-null))
 
 (defn add-id
   [cols]

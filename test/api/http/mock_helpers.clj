@@ -1,5 +1,6 @@
 (ns api.http.mock-helpers
   (:require
+   [cheshire.core :refer [generate-string]]
    [cemerick.url :refer [url]]
    [ring.mock.request :as mock]))
 
@@ -14,3 +15,17 @@
   [e]
   (mock/request
    :get (e->url e)))
+
+(defn api-post
+  [e]
+  (->
+   (mock/request
+    :post (e->url e))
+   (mock/content-type "application/json")))
+
+(defn with-body
+  [req body]
+  (->>
+   body
+   generate-string
+   (mock/body req)))

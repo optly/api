@@ -40,6 +40,10 @@
    (assoc :id ID)
    (add-index [:id])))
 
+(defn remove-id
+  [s]
+  (dissoc s :id))
+
 (defschema CreatedAt
   (describe
    org.joda.time.DateTime
@@ -56,6 +60,10 @@
    s
    {:created_at CreatedAt
     :updated_at UpdatedAt}))
+
+(defn remove-timestamps
+  [s]
+  (dissoc s :created_at :updated_at))
 
 (def db-string-defaults
   {:max-length 200})
