@@ -21,6 +21,7 @@
                  [org.clojure/clojure "1.8.0"]
                  [cheshire "5.7.0"]
                  [prismatic/schema-generators "0.1.0"]
+                 [ring-logger "0.7.7"]
                  [ring/ring-mock "0.3.0"]
                  [ring/ring-core "1.5.1"]
                  [ring/ring-jetty-adapter "1.5.1"]
