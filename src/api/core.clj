@@ -2,6 +2,7 @@
   (:require
    [api.tasks.handlers :as tasks]
    [compojure.api.sweet :refer [api context]]
+   [ring.logger :refer [wrap-with-logger]]
    [ring.util.http-response :as response]
    [ring.adapter.jetty :as jetty])
   (:gen-class))
@@ -13,15 +14,17 @@
                                    :data data}))
 
 (def handler
-  (api
-   {:exceptions {:handlers {:compojure.api.exception/default custom-handler}}
-    :swagger
-    {:ui "/"
-     :spec "/swagger.json"
-     :data {:info {:title "Optly API"
-                   :description "Optly API for task management"}
-            :tags [{:name "tasks", :description "Tasks to be managed"}]}}}
-   (context
-     "/api"
-     []
-     tasks/handlers)))
+  (->
+   (api
+    {:exceptions {:handlers {:compojure.api.exception/default custom-handler}}
+     :swagger
+     {:ui "/"
+      :spec "/swagger.json"
+      :data {:info {:title "Optly API"
+                    :description "Optly API for task management"}
+             :tags [{:name "tasks", :description "Tasks to be managed"}]}}}
+    (context
+      "/api"
+      []
+      tasks/handlers))
+   wrap-with-logger))
