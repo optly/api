@@ -1,5 +1,7 @@
 (ns api.core
   (:require
+   [clojure.tools.trace :refer [trace]]
+   [api.config :refer [version]]
    [api.tasks.handlers :as tasks]
    [compojure.api.sweet :refer [api context]]
    [ring.logger :refer [wrap-with-logger]]
@@ -14,15 +16,16 @@
                                    :data data}))
 
 (def handler
-  (->
-   (api
-    {:exceptions {:handlers {:compojure.api.exception/default custom-handler}}
-     :swagger
-     {:ui "/"
-      :spec "/swagger.json"
-      :data {:info {:title "Optly API"
-                    :description "Optly API for task management"}
-             :tags [{:name "tasks", :description "Tasks to be managed"}]}}}
+  (api
+   {:exceptions {:handlers {:compojure.api.exception/default custom-handler}}
+    :swagger
+    {:ui "/"
+     :spec "/swagger.json"
+     :data {:info {:title "Optly API"
+                   :description "Optly API for task management"
+                   :version version}
+            :tags [{:name "tasks", :description "Tasks to be managed"}]}}}
+   (->
     (context
       "/api"
       []
