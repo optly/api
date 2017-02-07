@@ -4,24 +4,38 @@
    [cemerick.url :refer [url]]
    [ring.mock.request :as mock]))
 
-(defn e->url
-  [e]
+(defn coerce->name
+  [v]
+  (if (keyword? v)
+    (name v)
+    (str v)))
+
+(defn es->url
+  [es]
   (->
-   "http://localhost"
-   (url "api" (name e))
+   url
+   (apply
+    "http://localhost"
+    "api"
+    (map coerce->name es))
    str))
 
 (defn api-get
-  [e]
+  [& es]
   (mock/request
-   :get (e->url e)))
+   :get (es->url es)))
 
 (defn api-post
-  [e]
+  [& es]
   (->
    (mock/request
-    :post (e->url e))
+    :post (es->url es))
    (mock/content-type "application/json")))
+
+(defn api-delete
+  [& es]
+  (mock/request
+   :delete (es->url es)))
 
 (defn with-body
   [req body]

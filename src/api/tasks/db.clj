@@ -3,7 +3,8 @@
    [clojure.tools.trace :refer [trace]]
    [clj-time.coerce :refer [to-timestamp from-sql-time]]
    [config.db :refer [connection]]
-   [api.db.utils :refer [query insert merge-timestamps]]
+   [api.db.utils
+    :refer [query insert delete merge-timestamps]]
    [api.tasks.domain :refer [Task]]
    [clj-time.core :as t]
    [clojure.java.jdbc :as jdbc]
@@ -52,3 +53,7 @@
        (assoc :position (-> conn max-position inc))
        (insert conn :tasks)
        ->schema))))
+
+(defn delete!
+  [id]
+  (delete id (connection) :tasks))
