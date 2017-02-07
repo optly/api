@@ -19,6 +19,7 @@ deploy:
     api_key:
       secure: aB4+VZBs7MxwnHlmyJstABV8g4x5/oNz+92XngSoAijt6MwbVOiDbRXHX7Hwwn0wZKko9oVIU9zIzKmL9TG4tbtUDtUoVsedkPEuTMjOoxKLTLySNZ7/BHfEJcwFxHtvdlUZweOceznFTpjSi4c+NBdU2u7Fktx+6uMon2I6lMx5jle3qPuMTZG4R5AwN3FWa8dIuNZ6s6qKaVcYz2xZf2yNwE0xM2Hrb/vYCZQpYIqYP6/fnUpKHdFbCTOTC7SMr17jRJA16ietIGmHsq/TSS5gjWF9H3DtxTPNLlS2w4GRGZV+VvDi/0HqsHCa5NMBIDgIrY0LM9sNA/yHnc/hGAHsq/FpC3mozjnt2rsF4+35ndEPC1ZoSmJsDD30RCdGp9a6g8Z1pAzg7dyvxvmUDafrKsBEGw5m3CYtDvht0r6nt5Ot7sQArdQuY4jE8S1w0va7jb2NVkG9o/QXrm9BoqlUDpKmj4+cls362FYvBuz0KyJXbfGVDU3owLmVswedyPtmtzFM0KjKIsah4nrQR0L1s45U6PT7tJIw6u0PCRG/79qY2wmq0McfVnXMl/j+dReHPHhsfX6FSxYMFPlLhF4OPUkKP55dA1i1JM6XS0veVCO4j39SsGzbHjLrRkBR/q6iw6ybntRtZ8cBOVKLTjh8zu6SkyI3mtWlDXR42Lw=
     file: "target/uberjar/api-standalone.jar"
+    skip_cleanup: true
     on:
       tags: true
 
