@@ -3,7 +3,7 @@
    [clj-time.core :as t]
    [clojure.string :refer [join]]
    [clojure.test.check.generators :as c-gen]
-   [api.tasks.domain :refer [Task CreateParams]]
+   [api.tasks.domain :refer [Task CreateParams PatchParams]]
    [api.domain.utils :refer [ID NonNegInt]]
    [schema.core :as s]
    [schema.experimental.generators :as s-gen]))
@@ -22,3 +22,6 @@
 
 (def create-params
   (s-gen/generator CreateParams leaf-generators))
+
+(def patch-params
+  (s-gen/generator PatchParams leaf-generators))

@@ -109,3 +109,9 @@
   (->
    conn
    (jdbc/delete! n ["1=?" 1])))
+
+(defn update
+  [t conn id tbl]
+  (->
+   conn
+   (jdbc/update! tbl t ["id = ?" id])))

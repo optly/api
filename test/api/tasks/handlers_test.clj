@@ -8,7 +8,7 @@
    [config.db :refer [connection]]
    [api.tasks.generators :as gen]
    [api.http.mock-helpers :refer
-    [api-get api-post api-delete with-body]]
+    [api-get api-post api-delete api-patch with-body]]
    [ring.util.http-predicates
     :refer [ok? created? no-content?]]
    [cheshire.core :refer [parse-string]]
@@ -33,6 +33,10 @@
       %
       (update :created_at from-string)
       (update :updated_at from-string)))))
+
+(defn remove-updated-at
+  [ts]
+  (map #(dissoc % :updated_at) ts))
 
 (defspec get-api-tasks-handler-test
   20
@@ -71,3 +75,18 @@
                            handler)]
              (is (true? (no-content? response)))
              (is (= [] (db/select!))))))
+
+(defspec delete-api-tasks-handler-test
+  20
+  (for-all [t gen/task
+            params gen/patch-params]
+           (db-utils/delete-all :tasks (connection))
+           (let [{id :id :as task} (db/insert! t)
+                 response (->
+                           (api-patch :tasks id)
+                           (with-body params)
+                           handler)
+                 expected (remove-updated-at [(merge task params)])
+                 actual (remove-updated-at (db/select!))]
+             (is (true? (no-content? response)))
+             (is (= expected actual)))))

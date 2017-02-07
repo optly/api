@@ -37,6 +37,12 @@
   (mock/request
    :delete (es->url es)))
 
+(defn api-patch
+  [& es]
+  (->
+   (mock/request :patch (es->url es))
+   (mock/content-type "application/json")))
+
 (defn with-body
   [req body]
   (->>
