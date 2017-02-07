@@ -1,23 +1,30 @@
 language: clojure
-
 lein: 2.7.1
+
 sudo: required
 
 services:
-  - docker
+- docker
 
 script:
-  - docker run -e POSTGRES_PASSWORD=mysecretpassword -p 15432:5432 -d postgres
-  - lein cljfmt check
-  - sleep 3
-  - lein migrate
-  - lein test
+- docker run -e POSTGRES_PASSWORD=mysecretpassword -p 15432:5432 -d postgres
+- lein cljfmt check
+- sleep 3
+- lein migrate
+- lein test
 
 deploy:
-  provider: heroku
-  api_key:
-    secure: NqNP+62MkyTt79tEtDX+TQWM/gxUGLuBhCyOjMmAcAp3rj/U2q4zv46rMOREeQNsRs58KalrpP8yDu7Ho3NEmIlQTTxlVJeItAZAIJ8oZo2+HYNMszxsCQbX2f0yv4qiX0a2VIzazgMgRUc26AbMTtYMDCrQ/TdgRGmVfOkLI9yAfdK13zZru/3Sx4oEclxOznsJpCwH5HrCwHFeIX3hq2mG94qxRTEAk56GRPwP8HBk39/8uRNKOyuDUI5Qn44FLsMlIQcLjRYzp/vVmF8cV5zzH3qsXQBpyZDJfP1xkTyAeRsXQ9gIcgQW8R/m1HKdMty/wcoO64FgFgTvpM2PZZ63vi8QenL+yWfiGNESryw2RiXC57I66GnQGe0Evd6URr16eQPiRWaVjLmk6fZEhq6hbEb3Er6kdUsjeobDzaImtaGayok7I6v/6tS7UQZZRUjdyc3KsoOBPtAK+L+HV+EbfDIIEHc8nu2/o/DXq9mOPUalQEBaY9KEvidw4wkl/i1o8yAHP0sqP+cVfDFiC2u4bo8ziBlDBGxPjl0AQWLejUlhW6NbgnxoLA6GgJIvPR4EiupYjh4/fQkU0cU7QQWpgn6MhXOnIklXliuYRDru8KAqubHo8KI+/rCJFD4gGr/psD5Q5HDVZ+dovWOqerBd+9yxA4ZrLAp4d9AUX4g=
-  app: optly-api
+  - provider: releases
+    api_key:
+      secure: aB4+VZBs7MxwnHlmyJstABV8g4x5/oNz+92XngSoAijt6MwbVOiDbRXHX7Hwwn0wZKko9oVIU9zIzKmL9TG4tbtUDtUoVsedkPEuTMjOoxKLTLySNZ7/BHfEJcwFxHtvdlUZweOceznFTpjSi4c+NBdU2u7Fktx+6uMon2I6lMx5jle3qPuMTZG4R5AwN3FWa8dIuNZ6s6qKaVcYz2xZf2yNwE0xM2Hrb/vYCZQpYIqYP6/fnUpKHdFbCTOTC7SMr17jRJA16ietIGmHsq/TSS5gjWF9H3DtxTPNLlS2w4GRGZV+VvDi/0HqsHCa5NMBIDgIrY0LM9sNA/yHnc/hGAHsq/FpC3mozjnt2rsF4+35ndEPC1ZoSmJsDD30RCdGp9a6g8Z1pAzg7dyvxvmUDafrKsBEGw5m3CYtDvht0r6nt5Ot7sQArdQuY4jE8S1w0va7jb2NVkG9o/QXrm9BoqlUDpKmj4+cls362FYvBuz0KyJXbfGVDU3owLmVswedyPtmtzFM0KjKIsah4nrQR0L1s45U6PT7tJIw6u0PCRG/79qY2wmq0McfVnXMl/j+dReHPHhsfX6FSxYMFPlLhF4OPUkKP55dA1i1JM6XS0veVCO4j39SsGzbHjLrRkBR/q6iw6ybntRtZ8cBOVKLTjh8zu6SkyI3mtWlDXR42Lw=
+    file: "target/uberjar/api-$TRAVIS_TAG-standalone.jar"
+    on:
+      tags: true
+
+  - provider: heroku
+    api_key:
+      secure: NqNP+62MkyTt79tEtDX+TQWM/gxUGLuBhCyOjMmAcAp3rj/U2q4zv46rMOREeQNsRs58KalrpP8yDu7Ho3NEmIlQTTxlVJeItAZAIJ8oZo2+HYNMszxsCQbX2f0yv4qiX0a2VIzazgMgRUc26AbMTtYMDCrQ/TdgRGmVfOkLI9yAfdK13zZru/3Sx4oEclxOznsJpCwH5HrCwHFeIX3hq2mG94qxRTEAk56GRPwP8HBk39/8uRNKOyuDUI5Qn44FLsMlIQcLjRYzp/vVmF8cV5zzH3qsXQBpyZDJfP1xkTyAeRsXQ9gIcgQW8R/m1HKdMty/wcoO64FgFgTvpM2PZZ63vi8QenL+yWfiGNESryw2RiXC57I66GnQGe0Evd6URr16eQPiRWaVjLmk6fZEhq6hbEb3Er6kdUsjeobDzaImtaGayok7I6v/6tS7UQZZRUjdyc3KsoOBPtAK+L+HV+EbfDIIEHc8nu2/o/DXq9mOPUalQEBaY9KEvidw4wkl/i1o8yAHP0sqP+cVfDFiC2u4bo8ziBlDBGxPjl0AQWLejUlhW6NbgnxoLA6GgJIvPR4EiupYjh4/fQkU0cU7QQWpgn6MhXOnIklXliuYRDru8KAqubHo8KI+/rCJFD4gGr/psD5Q5HDVZ+dovWOqerBd+9yxA4ZrLAp4d9AUX4g=
+    app: optly-api
 
 jdk:
-  - openjdk7
+- openjdk7
