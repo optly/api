@@ -4,7 +4,7 @@
    [clj-time.coerce :refer [to-timestamp from-sql-time]]
    [config.db :refer [connection]]
    [api.db.utils
-    :refer [query insert delete merge-timestamps]]
+    :refer [query insert delete merge-timestamps] :as db-utils]
    [api.tasks.domain :refer [Task]]
    [clj-time.core :as t]
    [clojure.java.jdbc :as jdbc]
@@ -57,3 +57,13 @@
 (defn delete!
   [id]
   (delete id (connection) :tasks))
+
+(defn update!
+  [id t]
+  (let [now (->
+             (t/now)
+             to-timestamp)]
+    (->
+     t
+     (assoc :updated_at now)
+     (db-utils/update (connection) id :tasks))))

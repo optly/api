@@ -16,16 +16,16 @@
                                    :data data}))
 
 (def handler
-  (api
-   {:exceptions {:handlers {:compojure.api.exception/default custom-handler}}
-    :swagger
-    {:ui "/"
-     :spec "/swagger.json"
-     :data {:info {:title "Optly API"
-                   :description "Optly API for task management"
-                   :version version}
-            :tags [{:name "tasks", :description "Tasks to be managed"}]}}}
-   (->
+  (->
+   (api
+    {:exceptions {:handlers {:compojure.api.exception/default custom-handler}}
+     :swagger
+     {:ui "/"
+      :spec "/swagger.json"
+      :data {:info {:title "Optly API"
+                    :description "Optly API for task management"
+                    :version version}
+             :tags [{:name "tasks", :description "Tasks to be managed"}]}}}
     (context
       "/api"
       []

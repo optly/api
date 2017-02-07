@@ -8,7 +8,8 @@
             remove-id
             constrained-string]]
    [ring.swagger.json-schema :refer [describe]]
-   [schema.core :refer [defschema Bool]]))
+   [clojure.set :refer [rename-keys]]
+   [schema.core :refer [defschema Bool optional-key]]))
 
 (defschema Task
   (->
@@ -28,3 +29,10 @@
    remove-id
    remove-timestamps
    (dissoc :position)))
+
+(defschema PatchParams
+  (->
+   CreateParams
+   (rename-keys
+    {:name (optional-key :name)
+     :completed (optional-key :completed)})))
