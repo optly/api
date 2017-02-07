@@ -12,6 +12,7 @@ script:
 - sleep 3
 - lein migrate
 - lein test
+- lein ring uberjar
 
 deploy:
   - provider: releases
