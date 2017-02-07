@@ -33,6 +33,7 @@
                   ["change" "version" "leiningen.release/bump-version"]
                   ["vcs" "commit"]
                   ["vcs" "push"]]
+  :uberjar-name "api-standalone.jar"
   :ring {:handler api.core/handler}
   :main ^:skip-aot api.core
   :target-path "target/%s"
