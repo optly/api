@@ -94,6 +94,12 @@
    (jdbc/insert! tbl t)
    first))
 
+(defn delete
+  [id conn tbl]
+  (->
+   conn
+   (jdbc/delete! tbl ["id = ?" id])))
+
 (defn merge-timestamps
   [t now]
   (assoc t :created_at now :updated_at now))

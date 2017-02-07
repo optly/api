@@ -8,8 +8,9 @@
    [config.db :refer [connection]]
    [api.tasks.generators :as gen]
    [api.http.mock-helpers :refer
-    [api-get api-post with-body]]
-   [ring.util.http-predicates :refer [ok? created?]]
+    [api-get api-post api-delete with-body]]
+   [ring.util.http-predicates
+    :refer [ok? created? no-content?]]
    [cheshire.core :refer [parse-string]]
    [clojure.test :refer [deftest testing is]]
    [clojure.test.check.properties :refer [for-all]]
@@ -59,3 +60,14 @@
                  json (read-task-json body)]
              (is (true? (created? response)))
              (is (= task json)))))
+
+(defspec delete-api-tasks-handler-test
+  20
+  (for-all [t gen/task]
+           (db-utils/delete-all :tasks (connection))
+           (let [{id :id :as task} (db/insert! t)
+                 response (->
+                           (api-delete :tasks id)
+                           handler)]
+             (is (true? (no-content? response)))
+             (is (= [] (db/select!))))))
