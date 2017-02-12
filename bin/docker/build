@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+docker build . -t optylist-api:latest
