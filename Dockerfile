@@ -1,17 +1,14 @@
 FROM johnmcconnell/lein:2.7.1
 MAINTAINER John McConnell "johnnyillinois@gmail.com"
 
-
 RUN /usr/sbin/useradd --create-home --home-dir /opt/optylist-api --shell /bin/bash optylist-api
 USER optylist-api
 WORKDIR /opt/optylist-api
-
 
 USER root
 COPY . /opt/optylist-api
 RUN chown -R optylist-api:optylist-api /opt/optylist-api
 USER optylist-api
-
 
 RUN lein ring uberjar
 
