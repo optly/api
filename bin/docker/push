@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+
+TAG="optylist/api:$TRAVIS_TAG"
+
+if [ -z "$TRAVIS_TAG" ] && [ "master" != "$TRAVIS_BRANCH" ]
+then
+  exit 0
+fi
+
+if [ -z "$TRAVIS_TAG" ]
+then
+  TAG="optylist/api"
+fi
+
+docker build . -t "$TAG"
+docker push "$TAG"
