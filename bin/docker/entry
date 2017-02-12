@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+set -e
+
+if [ "$1" == "web" ]
+then
+  java -jar target/uberjar/api-standalone.jar
+elif [ "$1" == "migrate" ]
+then
+  lein migrate
+else
+  exec "$@"
+fi

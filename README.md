@@ -12,12 +12,12 @@ make sure **postgres** is installed and running.
 
 Start the postgres docker container:
 ```
-docker run -e POSTGRES_PASSWORD=mysecretpassword -p 15432:5432 -d postgres
+  docker run -e POSTGRES_PASSWORD=mysecretpassword -p 15432:5432 -d postgres
 ```
 
 Migrate the database to latest schema version:
 ```
-lein migrate
+  lein migrate
 ```
 
 ### Build
@@ -42,6 +42,34 @@ Run:
 
 ```
   lein test
+```
+
+## Docker Deployment
+
+### Postgres
+
+Start the postgres docker container
+
+```
+  docker run --name optylist-api-db -e POSTGRES_PASSWORD=mysecretpassword -d postgres
+```
+
+### Migrations
+
+Run the migrations against the postgres database
+
+```
+  docker run -e "JDBC_DATABASE_URL=jdbc:postgresql://optylist-api-db:5432/postgres?user=postgres&password=mysecretpassword" \
+    --link optylist-api-db:optylist-api-db optylist-api migrate
+```
+
+### Server
+
+Start the application server
+
+```
+  docker run -e "JDBC_DATABASE_URL=jdbc:postgresql://optylist-api-db:5432/postgres?user=postgres&password=mysecretpassword" \
+    --link optylist-api-db:optylist-api-db -p 4000:3000 -d optylist-api
 ```
 
 
