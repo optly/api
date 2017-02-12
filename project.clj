@@ -1,4 +1,4 @@
-(defproject api "0.1.5-SNAPSHOT"
+(defproject api "0.1.5"
   :min-lein-version "2.6.1"
   :description "Optly API"
   :url "https://github.com/optly/api"
@@ -26,8 +26,7 @@
                  [ring/ring-core "1.5.1"]
                  [ring/ring-jetty-adapter "1.5.1"]
                  [environ "1.1.0"]]
-  :release-tasks [["vcs" "assert-committed"]
-                  ["change" "version" "leiningen.release/bump-version" "release"]
+  :release-tasks [["change" "version" "leiningen.release/bump-version" "release"]
                   ["vcs" "commit"]
                   ["vcs" "tag"]
                   ["change" "version" "leiningen.release/bump-version"]
