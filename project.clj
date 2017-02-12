@@ -1,4 +1,4 @@
-(defproject api "0.1.5"
+(defproject api "0.1.6-SNAPSHOT"
   :min-lein-version "2.6.1"
   :description "Optly API"
   :url "https://github.com/optly/api"
