@@ -60,7 +60,7 @@ Run the migrations against the postgres database
 
 ```
   docker run -e "JDBC_DATABASE_URL=jdbc:postgresql://optylist-api-db:5432/postgres?user=postgres&password=mysecretpassword" \
-    --link optylist-api-db:optylist-api-db optylist-api migrate
+    --link optylist-api-db:optylist-api-db optylist/api migrate
 ```
 
 ### Server
@@ -69,7 +69,7 @@ Start the application server
 
 ```
   docker run -e "JDBC_DATABASE_URL=jdbc:postgresql://optylist-api-db:5432/postgres?user=postgres&password=mysecretpassword" \
-    --link optylist-api-db:optylist-api-db -p 4000:3000 -d optylist-api
+    --link optylist-api-db:optylist-api-db -p 4000:3000 -d optylist/api
 ```
 
 
