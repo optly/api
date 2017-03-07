@@ -13,6 +13,7 @@
                  [drift "1.5.3"]
                  [honeysql "0.8.2"]
                  [com.cemerick/url "0.1.1"]
+                 [com.gfredericks/test.chuck "0.2.7"]
                  [clojure.jdbc/clojure.jdbc-c3p0 "0.3.2"]
                  [org.clojure/tools.trace "0.7.9"]
                  [org.clojure/tools.logging "0.3.1"]

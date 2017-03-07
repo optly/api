@@ -24,9 +24,19 @@
    (->
     (h/select :*)
     (h/from :tasks)
-    (h/order-by [:position :asc])
     (query (connection)))
    (map ->schema)))
+
+(defn find!
+  [id]
+  (->>
+   (->
+    (h/select :*)
+    (h/from :tasks)
+    (h/where [:= :id id])
+    (query (connection)))
+   (map ->schema)
+   first))
 
 (defn max-position
   [conn]
