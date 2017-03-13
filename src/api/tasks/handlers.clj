@@ -5,7 +5,7 @@
    [clj-time.core :refer [now]]
    [api.domain.utils :refer [ID]]
    [api.tasks.domain :refer [Task CreateParams PatchParams]]
-   [api.tasks.db :refer [select! insert! delete! update!]]
+   [api.tasks.db :refer [select! insert! delete! update! find!]]
    [compojure.api.sweet :refer [context GET POST DELETE PATCH]]
    [ring.util.http-response
     :refer [ok created no-content]]
@@ -18,9 +18,15 @@
    (url "api" "task" id)
    str))
 
-(defn get-h
+(defn get-all-h
   [req]
   (ok (select!)))
+
+(defn get-h
+  [id]
+  (fn
+    [req]
+    (ok (find! id))))
 
 (defn post-h
   [params]
@@ -53,7 +59,7 @@
       []
       :responses {status/ok {:schema [Task]
                              :description "The list of all tasks"}}
-      get-h)
+      get-all-h)
 
     (POST
       "/"
@@ -68,6 +74,13 @@
       []
       :path-params [id :- ID]
 
+      (GET
+        "/"
+        []
+        :responses {status/ok {:schema Task
+                               :description "The details of a task"}}
+        (get-h id))
+
       (PATCH
         "/"
         []
@@ -79,5 +92,5 @@
       (DELETE
         "/"
         []
-        :responses {status/no-content {:description "The task was deleted"}}
+        :responses {status/no-content {:description "Delete a task"}}
         (delete-h id)))))

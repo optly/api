@@ -1,6 +1,8 @@
 (ns api.tasks.handlers-test
   (:require
    [clojure.tools.trace :refer [trace]]
+   [com.gfredericks.test.chuck :as chuck]
+   [com.gfredericks.test.chuck.clojure-test :refer [checking]]
    [clj-time.coerce :refer [from-string]]
    [api.core :refer [handler]]
    [api.tasks.db :as db]
@@ -16,77 +18,92 @@
    [clojure.test.check.properties :refer [for-all]]
    [clojure.test.check.clojure-test :refer [defspec]]))
 
+(defn update-ts
+  [json]
+  (->
+   json
+   (update :created_at from-string)
+   (update :updated_at from-string)))
+
 (defn read-task-json
   [body]
   (->
    body
    (parse-string true)
-   (update :created_at from-string)
-   (update :updated_at from-string)))
+   update-ts))
 
 (defn read-tasks-json
   [body]
   (->>
    (parse-string body true)
-   (map
-    #(->
-      %
-      (update :created_at from-string)
-      (update :updated_at from-string)))))
+   (map update-ts)))
 
 (defn remove-updated-at
   [ts]
   (map #(dissoc % :updated_at) ts))
 
-(defspec get-api-tasks-handler-test
-  20
-  (for-all [t gen/task]
-           (db-utils/delete-all :tasks (connection))
-           (let [task (db/insert! t)
-                 response (->
-                           (api-get :tasks)
-                           handler)
-                 body (slurp (response :body))
-                 json (read-tasks-json body)]
-             (is (true? (ok? response)))
-             (is (= [task] json)))))
+(deftest get-api-tasks-handler-test
+  (checking "returns the tasks" (chuck/times 20)
+            [t gen/task]
+            (db-utils/delete-all :tasks (connection))
+            (let [task (db/insert! t)
+                  response (->
+                            (api-get :tasks)
+                            handler)
+                  body (slurp (response :body))
+                  json (read-tasks-json body)]
+              (is (true? (ok? response)))
+              (is (= [task] json)))))
 
-(defspec create-api-tasks-handler-test
-  20
-  (for-all [params gen/create-params]
-           (db-utils/delete-all :tasks (connection))
-           (let [response (->
-                           (api-post :tasks)
-                           (with-body params)
-                           handler)
-                 task (-> (db/select!) first)
-                 body (slurp (response :body))
-                 json (read-task-json body)]
-             (is (true? (created? response)))
-             (is (= task json)))))
+(deftest get-api-task-handler-test
+  (checking "returns a specific task" (chuck/times 20)
+            [t gen/task]
+            (db-utils/delete-all :tasks (connection))
+            (let [{task-id :id :as task} (db/insert! t)
+                  response (->
+                            (api-get :tasks task-id)
+                            handler)
+                  body (slurp (response :body))
+                  json (read-task-json body)]
+              (is (true? (ok? response)))
+              (is (= task json)))))
 
-(defspec delete-api-tasks-handler-test
-  20
-  (for-all [t gen/task]
-           (db-utils/delete-all :tasks (connection))
-           (let [{id :id :as task} (db/insert! t)
-                 response (->
-                           (api-delete :tasks id)
-                           handler)]
-             (is (true? (no-content? response)))
-             (is (= [] (db/select!))))))
+(deftest create-api-tasks-handler-test
+  (checking "creates a task" (chuck/times 20)
+            [params gen/create-params]
+            (db-utils/delete-all :tasks (connection))
+            (let [response (->
+                            (api-post :tasks)
+                            (with-body params)
+                            handler)
+                  task (-> (db/select!) first)
+                  body (slurp (response :body))
+                  json (read-task-json body)]
+              (is (true? (created? response)))
+              (is (= task json)))))
 
-(defspec delete-api-tasks-handler-test
-  20
-  (for-all [t gen/task
-            params gen/patch-params]
-           (db-utils/delete-all :tasks (connection))
-           (let [{id :id :as task} (db/insert! t)
-                 response (->
-                           (api-patch :tasks id)
-                           (with-body params)
-                           handler)
-                 expected (remove-updated-at [(merge task params)])
-                 actual (remove-updated-at (db/select!))]
-             (is (true? (no-content? response)))
-             (is (= expected actual)))))
+(deftest delete-api-tasks-handler-test
+  (checking "deletes a task" (chuck/times 20)
+            [t gen/task]
+            (db-utils/delete-all :tasks (connection))
+            (let [{id :id :as task} (db/insert! t)
+                  response (->
+                            (api-delete :tasks id)
+                            handler)]
+              (is (true? (no-content? response)))
+              (is (= [] (db/select!))))))
+
+(deftest patch-api-tasks-handler-test
+  (checking "patches a task" (chuck/times 20)
+            [t gen/task
+             params gen/patch-params]
+            (db-utils/delete-all :tasks (connection))
+            (let [{id :id :as task} (db/insert! t)
+                  response (->
+                            (api-patch :tasks id)
+                            (with-body params)
+                            handler)
+                  expected (remove-updated-at [(merge task params)])
+                  actual (remove-updated-at (db/select!))]
+              (is (true? (no-content? response)))
+              (is (= expected actual)))))
