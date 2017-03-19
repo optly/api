@@ -89,7 +89,7 @@
                   task (-> (db/select!) first)
                   body (slurp (response :body))
                   {task-id :id :as json} (read-task-json body)
-                  expected-location (str "http://localhost/api/task/" task-id)]
+                  expected-location (str "http://localhost/api/tasks/" task-id)]
               (is (true? (created? response)))
               (is (= task json))
               (is (= expected-location location)))))

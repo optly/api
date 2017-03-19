@@ -3,6 +3,7 @@
    [clojure.tools.trace :refer [trace]]
    [api.config :refer [version init!]]
    [api.tasks.handlers :as tasks]
+   [api.users.handlers :as users]
    [compojure.api.sweet :refer [api context]]
    [ring.logger :refer [wrap-with-logger]]
    [ring.util.http-response :as response]
@@ -25,9 +26,11 @@
       :data {:info {:title "Optly API"
                     :description "Optly API for task management"
                     :version version}
-             :tags [{:name "tasks", :description "Tasks to be managed"}]}}}
+             :tags [{:name "tasks" :description "Tasks to be managed"}
+                    {:name "users" :description "Users of the API"}]}}}
     (context
       "/api"
       []
-      tasks/handlers))
+      tasks/handlers
+      users/handlers))
    init!))

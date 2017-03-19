@@ -66,16 +66,21 @@
   (dissoc s :created_at :updated_at))
 
 (def db-string-defaults
-  {:max-length 200})
+  {:max-length 200
+   :min-length 0})
 
 (defn constrained-string
   [& kvs]
-  (let [{max-length :max-length} (->>
-                                  kvs
-                                  (apply hash-map)
-                                  (merge db-string-defaults))]
+  (let [{:keys [max-length
+                min-length]} (->>
+                              kvs
+                              (apply hash-map)
+                              (merge db-string-defaults))]
     (->
      Str
-     (constrained #(<= (count %) max-length))
+     (constrained
+      #(and
+        (<= (count %) max-length)
+        (>= (count %) min-length)))
      (vary-meta
       assoc-in [:db :max-length] max-length))))

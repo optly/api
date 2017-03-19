@@ -1,9 +1,9 @@
-(ns api.tasks.generators
+(ns api.users.generators
   (:require
    [clj-time.core :as t]
    [clojure.string :refer [join]]
    [clojure.test.check.generators :as c-gen]
-   [api.tasks.domain :refer [Task TaskCreateParams TaskPatchParams]]
+   [api.users.domain :refer [User UserCreateParams]]
    [api.domain.utils :refer [ID NonNegInt]]
    [schema.core :as s]
    [schema.experimental.generators :as s-gen]))
@@ -17,11 +17,8 @@
            (c-gen/fmap join))
    s/Bool c-gen/boolean})
 
-(def task
-  (s-gen/generator Task leaf-generators))
+(def user
+  (s-gen/generator User leaf-generators))
 
 (def create-params
-  (s-gen/generator TaskCreateParams leaf-generators))
-
-(def patch-params
-  (s-gen/generator TaskPatchParams leaf-generators))
+  (s-gen/generator UserCreateParams leaf-generators))

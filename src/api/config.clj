@@ -5,7 +5,7 @@
    [clojure.java.io :refer [resource]]
    [clojure.edn :as edn]))
 
-(def cljenv (env :cljenv :dev))
+(def cljenv (env :cljenv "dev"))
 
 (defn init!
   [app]

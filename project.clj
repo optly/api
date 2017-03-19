@@ -22,6 +22,7 @@
                  [org.postgresql/postgresql "9.4.1212.jre7"]
                  [org.clojure/java.jdbc "0.7.0-alpha1"]
                  [org.clojure/clojure "1.8.0"]
+                 [buddy/buddy-hashers "1.2.0"]
                  [cheshire "5.7.0"]
                  [prismatic/schema-generators "0.1.0"]
                  [ring-logger "0.7.7"]
