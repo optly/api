@@ -13,7 +13,7 @@
    [ring.util.http-status :as status]))
 
 (defn ->url
-  [{id :id}]
+  [{id :id} {origin :origin}]
   (->
    "http://localhost"
    (url "api" "task" id)
@@ -36,7 +36,7 @@
   (fn
     [req]
     (let [result (insert! params)]
-      (created (->url result) result))))
+      (created (->url result req) result))))
 
 (defn patch-h
   [params id]

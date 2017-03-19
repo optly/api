@@ -1,7 +1,7 @@
 (ns api.core
   (:require
    [clojure.tools.trace :refer [trace]]
-   [api.config :refer [version]]
+   [api.config :refer [version init!]]
    [api.tasks.handlers :as tasks]
    [compojure.api.sweet :refer [api context]]
    [ring.logger :refer [wrap-with-logger]]
@@ -30,4 +30,4 @@
       "/api"
       []
       tasks/handlers))
-   wrap-with-logger))
+   init!))

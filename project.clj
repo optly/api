@@ -7,6 +7,7 @@
   :plugins [[lein-cljfmt "0.5.6"]
             [lein-ring "0.10.0"]
             [lein-codox "0.10.2"]
+            [lein-environ "1.1.0"]
             [drift "1.5.3"]]
   :dependencies [[clj-time "0.13.0"]
                  [metosin/compojure-api "1.1.10"]
@@ -41,5 +42,6 @@
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all
                        :resource-paths ["swagger-ui"]}
-             :test {:dependencies [[ring/ring-mock "0.3.0"]]}
+             :test {:dependencies [[ring/ring-mock "0.3.0"]]
+                    :env {:cljenv "test"}}
              :dev {:dependencies [[ring/ring-mock "0.3.0"]]}})
