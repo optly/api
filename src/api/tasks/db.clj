@@ -3,6 +3,7 @@
    [clojure.tools.trace :refer [trace]]
    [clj-time.coerce :refer [to-timestamp from-sql-time]]
    [config.db :refer [connection]]
+   [api.error.core :refer [value error]]
    [api.db.utils
     :refer [query insert delete merge-timestamps] :as db-utils]
    [api.tasks.domain :refer [Task]]
@@ -29,14 +30,17 @@
 
 (defn find!
   [id]
-  (->>
-   (->
-    (h/select :*)
-    (h/from :tasks)
-    (h/where [:= :id id])
-    (query (connection)))
-   (map ->schema)
-   first))
+  (let [r (->>
+           (->
+            (h/select :*)
+            (h/from :tasks)
+            (h/where [:= :id id])
+            (query (connection)))
+           (map ->schema)
+           first)]
+    (if (nil? r)
+      (error (str "Task: " id " not found"))
+      (value r))))
 
 (defn max-position
   [conn]

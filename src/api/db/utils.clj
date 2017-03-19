@@ -1,5 +1,6 @@
 (ns api.db.utils
   (:require
+   [api.error.core :refer [error value]]
    [clojure.string :refer [join]]
    [honeysql.core :as honeysql]
    [clojure.java.jdbc :as jdbc]))
@@ -94,11 +95,22 @@
    (jdbc/insert! tbl t)
    first))
 
+(defn missing-entity-error
+  [tbl id]
+  (error (str "Entity: " (name tbl) id " does not exist")))
+
+(defn wrap-cnt-query
+  [[cnt & cnts] tbl id]
+  (if (< cnt 1)
+    (missing-entity-error tbl id)
+    (value cnt)))
+
 (defn delete
   [id conn tbl]
   (->
    conn
-   (jdbc/delete! tbl ["id = ?" id])))
+   (jdbc/delete! tbl ["id = ?" id])
+   (wrap-cnt-query tbl id)))
 
 (defn merge-timestamps
   [t now]
@@ -114,4 +126,5 @@
   [t conn id tbl]
   (->
    conn
-   (jdbc/update! tbl t ["id = ?" id])))
+   (jdbc/update! tbl t ["id = ?" id])
+   (wrap-cnt-query tbl id)))

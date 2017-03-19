@@ -12,7 +12,7 @@
    [api.http.mock-helpers :refer
     [api-get api-post api-delete api-patch with-body]]
    [ring.util.http-predicates
-    :refer [ok? created? no-content?]]
+    :refer [ok? created? no-content? not-found?]]
    [cheshire.core :refer [parse-string]]
    [clojure.test :refer [deftest testing is]]
    [clojure.test.check.properties :refer [for-all]]
@@ -52,7 +52,7 @@
                             handler)
                   body (slurp (response :body))
                   json (read-tasks-json body)]
-              (is (true? (ok? response)))
+              (is (ok? response))
               (is (= [task] json)))))
 
 (deftest get-api-task-handler-test
@@ -65,8 +65,16 @@
                             handler)
                   body (slurp (response :body))
                   json (read-task-json body)]
-              (is (true? (ok? response)))
-              (is (= task json)))))
+              (is (ok? response))
+              (is (= task json))))
+
+  (checking "returns 404 if task does not exist" (chuck/times 20)
+            [t gen/task]
+            (let [{task-id :id} t
+                  response (->
+                            (api-get :tasks task-id)
+                            handler)]
+              (is (not-found? response)))))
 
 (deftest create-api-tasks-handler-test
   (checking "creates a task" (chuck/times 20)
@@ -79,7 +87,7 @@
                   task (-> (db/select!) first)
                   body (slurp (response :body))
                   json (read-task-json body)]
-              (is (true? (created? response)))
+              (is (created? response))
               (is (= task json)))))
 
 (deftest delete-api-tasks-handler-test
@@ -90,8 +98,17 @@
                   response (->
                             (api-delete :tasks id)
                             handler)]
-              (is (true? (no-content? response)))
-              (is (= [] (db/select!))))))
+              (is (no-content? response))
+              (is (= [] (db/select!)))))
+
+  (checking "returns 404 if task does not exist" (chuck/times 20)
+            [t gen/task]
+            (db-utils/delete-all :tasks (connection))
+            (let [{task-id :id} t
+                  response (->
+                            (api-delete :tasks 1)
+                            handler)]
+              (is (not-found? response)))))
 
 (deftest patch-api-tasks-handler-test
   (checking "patches a task" (chuck/times 20)
@@ -105,5 +122,14 @@
                             handler)
                   expected (remove-updated-at [(merge task params)])
                   actual (remove-updated-at (db/select!))]
-              (is (true? (no-content? response)))
-              (is (= expected actual)))))
+              (is (no-content? response))
+              (is (= expected actual))))
+
+  (checking "returns 404 if task does not exist" (chuck/times 20)
+            [t gen/task]
+            (db-utils/delete-all :tasks (connection))
+            (let [{task-id :id} t
+                  response (->
+                            (api-get :tasks task-id)
+                            handler)]
+              (is (not-found? response)))))
