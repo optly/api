@@ -23,16 +23,16 @@
    add-id
    add-timestamps))
 
-(defschema CreateParams
+(defschema TaskCreateParams
   (->
    Task
    remove-id
    remove-timestamps
    (dissoc :position)))
 
-(defschema PatchParams
+(defschema TaskPatchParams
   (->
-   CreateParams
+   TaskCreateParams
    (rename-keys
     {:name (optional-key :name)
      :completed (optional-key :completed)})))

@@ -5,7 +5,7 @@
    [clj-time.core :refer [now]]
    [api.error.core :refer [let-error]]
    [api.domain.utils :refer [ID]]
-   [api.tasks.domain :refer [Task CreateParams PatchParams]]
+   [api.tasks.domain :refer [Task TaskCreateParams TaskPatchParams]]
    [api.tasks.db :refer [select! insert! delete! update! find!]]
    [compojure.api.sweet :refer [context GET POST DELETE PATCH]]
    [ring.util.http-response
@@ -16,7 +16,7 @@
   [{id :id} {origin :origin}]
   (->
    "http://localhost"
-   (url "api" "task" id)
+   (url "api" "tasks" id)
    str))
 
 (defn get-all-h
@@ -69,7 +69,7 @@
     (POST
       "/"
       []
-      :body [params CreateParams]
+      :body [params TaskCreateParams]
       :responses {status/created {:schema Task
                                   :description "Create a task in the last position in the list"}}
       (post-h params))
@@ -90,7 +90,7 @@
       (PATCH
         "/"
         []
-        :body [params PatchParams]
+        :body [params TaskPatchParams]
         :responses {status/created {:description "Edit a task with a set of values in patch"}
                     status/not-found {:description "Task to be updated does not exist"}}
         (patch-h params id))
