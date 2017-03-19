@@ -1,7 +1,17 @@
 (ns api.config
   (:require
+   [ring.logger :refer :all]
+   [environ.core :refer [env]]
    [clojure.java.io :refer [resource]]
    [clojure.edn :as edn]))
+
+(def cljenv (env :cljenv :dev))
+
+(defn init!
+  [app]
+  (case cljenv
+    "test" app
+    (wrap-with-logger app)))
 
 (def uber-version
   (some->
@@ -10,5 +20,4 @@
    edn/read-string
    (nth 2)))
 
-(def version
-  uber-version)
+(def version (str cljenv "-" uber-version))

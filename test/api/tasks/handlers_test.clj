@@ -70,6 +70,7 @@
 
   (checking "returns 404 if task does not exist" (chuck/times 20)
             [t gen/task]
+            (db-utils/delete-all :tasks (connection))
             (let [{task-id :id} t
                   response (->
                             (api-get :tasks task-id)
@@ -78,17 +79,20 @@
 
 (deftest create-api-tasks-handler-test
   (checking "creates a task" (chuck/times 20)
-            [params gen/create-params]
+            [{task-id :id :as params} gen/create-params]
             (db-utils/delete-all :tasks (connection))
-            (let [response (->
-                            (api-post :tasks)
-                            (with-body params)
-                            handler)
+            (let [{:keys [headers] :as response} (->
+                                                  (api-post :tasks)
+                                                  (with-body params)
+                                                  handler)
+                  location (get headers "Location")
                   task (-> (db/select!) first)
                   body (slurp (response :body))
-                  json (read-task-json body)]
-              (is (created? response))
-              (is (= task json)))))
+                  {task-id :id :as json} (read-task-json body)
+                  expected-location (str "http://localhost/api/task/" task-id)]
+              (is (true? (created? response)))
+              (is (= task json))
+              (is (= expected-location location)))))
 
 (deftest delete-api-tasks-handler-test
   (checking "deletes a task" (chuck/times 20)
