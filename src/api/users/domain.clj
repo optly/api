@@ -28,12 +28,15 @@
    "The password confirmation of the user"
    :example "secure-password"))
 
+(defschema Email
+  (describe
+   (constrained-string :max-length 1024)
+   "the email of the user"
+   :example "test-user@example.com"))
+
 (defschema User
   (->
-   {:email (describe
-            (constrained-string :max-length 1024)
-            "the email of the user"
-            :example "test-user@example.com")
+   {:email Email
     :confirmed_at ConfirmedAt}
    add-id
    add-timestamps))
@@ -46,3 +49,7 @@
    (dissoc :confirmed_at)
    (assoc :password Password)
    (assoc :password_confirmation PasswordConfirmation)))
+
+(defschema UserSigninParams
+  {:email Email
+   :password Password})

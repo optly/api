@@ -17,7 +17,6 @@
   [db]
   (->
    db
-   (dissoc :password :password-confirmation)
    (update :created_at from-sql-time)
    (update :updated_at from-sql-time)))
 
@@ -29,6 +28,18 @@
     (h/from table-name)
     (query (connection)))
    (map ->schema)))
+
+(defn find-by!
+  [column v]
+  (->>
+   (->
+    (h/select :*)
+    (h/from table-name)
+    (h/where [:= column v])
+    (query (connection)))
+   (take 1)
+   (map ->schema)
+   first))
 
 (defn insert!
   [t]

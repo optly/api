@@ -1,20 +1,23 @@
 (ns api.users.handlers-test
   (:require
-   [clojure.tools.trace :refer [trace]]
    [com.gfredericks.test.chuck :as chuck]
    [com.gfredericks.test.chuck.clojure-test :refer [checking]]
    [clj-time.coerce :refer [from-string]]
-   [api.core :refer [handler]]
    [buddy.hashers :as hashers]
+   [config.db :refer [connection]]
+   [api.core :refer [handler]]
    [api.users.db :as db]
    [api.db.utils :as db-utils]
-   [config.db :refer [connection]]
    [api.users.generators :as gen]
+   [api.jwt.core :as jwt]
    [api.http.mock-helpers :refer
     [api-get api-post api-delete api-patch with-body]]
    [ring.util.http-predicates
-    :refer [ok? created? no-content? not-found?]]
+    :refer [ok? created?
+            no-content? not-found?
+            unauthorized?]]
    [cheshire.core :refer [parse-string]]
+   [clojure.tools.trace :refer [trace]]
    [clojure.test :refer [deftest testing is]]
    [clojure.test.check.generators :refer [no-shrink]]
    [clojure.test.check.properties :refer [for-all]]
@@ -36,20 +39,62 @@
 
 (def table-name :users)
 
+(defn create-user!
+  [params]
+  (->
+   (api-post table-name)
+   (with-body params)
+   handler))
+
+(defn response->user-json
+  [resp]
+  (->
+   resp
+   :body
+   slurp
+   read-user-json))
+
 (deftest create-api-users-handler-test
   (checking "creates a user" (chuck/times 5)
             [params (no-shrink gen/create-params)]
             (db-utils/delete-all table-name (connection))
-            (let [response (->
-                            (api-post table-name)
-                            (with-body params)
-                            handler)
-                  {:keys [email
+            (let [response (create-user! params)
+                  json (response->user-json response)
+                  {:keys [id
+                          email
                           confirmed_at
-                          encrypted_password]} (-> (db/select!) first)
-                  body (slurp (response :body))
-                  json (read-user-json body)]
+                          encrypted_password]} (-> (db/select!) first)]
               (is (created? response))
-              (is (= (params :email) email))
+              (is (= (json :id) id))
+              (is (= (params :email) (json :email) email))
               (is (nil? confirmed_at))
               (is (hashers/check (params :password) encrypted_password)))))
+
+(deftest api-users-signin-handler-test
+  (checking "signin returns a JWT for the user" (chuck/times 5)
+            [params (no-shrink gen/create-params)]
+            (db-utils/delete-all table-name (connection))
+            (let [{id :id} (-> params create-user! response->user-json)
+                  signin-params (select-keys params [:email :password])
+                  response (->
+                            (api-post table-name :signin)
+                            (with-body signin-params)
+                            handler)
+                  body (slurp (response :body))
+
+                  {:keys [token]} (parse-string body true)]
+              (is (ok? response))
+              (is (= {:id id} (jwt/unsign token)))))
+
+  (checking "using a bad password does not work" (chuck/times 5)
+            [params (no-shrink gen/create-params)]
+            (db-utils/delete-all table-name (connection))
+            (let [{user-id :id} (create-user! params)
+                  signin-params (->
+                                 (select-keys params [:email])
+                                 (assoc :password "wrong-password-124"))
+                  response (->
+                            (api-post table-name :signin)
+                            (with-body signin-params)
+                            handler)]
+              (is (unauthorized? response)))))
