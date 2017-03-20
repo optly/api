@@ -2,8 +2,9 @@
   (:require
    [cemerick.url :refer [url]]
    [clj-time.core :refer [now]]
-   [api.domain.utils :refer [ID]]
-   [api.users.domain :refer [User UserCreateParams UserSigninParams]]
+   [api.users.domain
+    :as domain
+    :refer [User UserCreateParams UserSigninParams]]
    [api.users.db :refer [insert!] :as db]
    [api.jwt.core :as jwt]
    [buddy.hashers :as hashers]
@@ -11,7 +12,7 @@
    [ring.util.http-response
     :refer [ok created
             no-content not-found
-            unauthorized]]
+            unauthorized bad-request]]
    [ring.util.http-status :as status]))
 
 (defn ->url
@@ -35,13 +36,16 @@
   [params]
   (fn
     [req]
-    (let [result (->
+    (let [errors (domain/validate-create-params params)
+          result (->
                   params
                   create-params->user
                   insert!)]
-      (created
-       (->url result req)
-       (dissoc result :encrypted_password)))))
+      (if (nil? errors)
+        (created
+         (->url result req)
+         (dissoc result :encrypted_password))
+        (bad-request errors)))))
 
 (defn signin-post-h
   [{:keys [email password]}]

@@ -14,7 +14,8 @@
   (response/internal-server-error {:type "unknown-exception"
                                    :class (.getName (.getClass e))
                                    :message (.getMessage e)
-                                   :data data}))
+                                   :data data
+                                   :stack (map str (.getStackTrace e))}))
 
 (def handler
   (->
