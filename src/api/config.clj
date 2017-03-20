@@ -21,3 +21,6 @@
    (nth 2)))
 
 (def version (str cljenv "-" uber-version))
+
+(def jwt-secret
+  (env :jwt-secret "jwt-secret"))

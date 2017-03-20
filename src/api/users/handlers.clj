@@ -3,13 +3,23 @@
    [cemerick.url :refer [url]]
    [clj-time.core :refer [now]]
    [api.domain.utils :refer [ID]]
-   [api.users.domain :refer [User UserCreateParams]]
-   [api.users.db :refer [insert!]]
+   [api.users.domain :refer [User UserCreateParams UserSigninParams]]
+   [api.users.db :refer [insert!] :as db]
+   [api.jwt.core :as jwt]
    [buddy.hashers :as hashers]
    [compojure.api.sweet :refer [context GET POST DELETE PATCH]]
    [ring.util.http-response
-    :refer [ok created no-content not-found]]
+    :refer [ok created
+            no-content not-found
+            unauthorized]]
    [ring.util.http-status :as status]))
+
+(defn ->url
+  [{id :id} {origin :origin}]
+  (->
+   "http://localhost"
+   (url "api" "tasks" id)
+   str))
 
 (defn create-params->user
   [{:keys [password email]}]
@@ -17,12 +27,9 @@
    :confirmed_at nil
    :encrypted_password (hashers/derive password)})
 
-(defn ->url
-  [{id :id}]
-  (->
-   "http://localhost"
-   (url "api" "users" id)
-   str))
+(defn signin-token
+  [id]
+  {:token (jwt/sign {:id id})})
 
 (defn post-h
   [params]
@@ -33,8 +40,18 @@
                   create-params->user
                   insert!)]
       (created
-       (->url result)
+       (->url result req)
        (dissoc result :encrypted_password)))))
+
+(defn signin-post-h
+  [{:keys [email password]}]
+  (fn
+    [req]
+    (let [{:keys [id encrypted_password]} (db/find-by! :email email)]
+      (cond
+        (nil? encrypted_password) (unauthorized)
+        (hashers/check password encrypted_password) (ok (signin-token id))
+        :else (unauthorized)))))
 
 (def handlers
   (context
@@ -48,4 +65,12 @@
       :body [params UserCreateParams]
       :responses {status/created {:schema User
                                   :description "Create a user"}}
-      (post-h params))))
+      (post-h params))
+
+    (POST
+      "/signin"
+      []
+      :body [params UserSigninParams]
+      :responses {status/ok {:schema {:token String}
+                             :description "Sign in and retrieve JWT token"}}
+      (signin-post-h params))))

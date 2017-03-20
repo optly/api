@@ -3,7 +3,8 @@
    [clj-time.core :as t]
    [clojure.string :refer [join]]
    [clojure.test.check.generators :as c-gen]
-   [api.users.domain :refer [User UserCreateParams]]
+   [api.users.domain
+    :refer [User UserCreateParams UserSigninParams]]
    [api.domain.utils :refer [ID NonNegInt]]
    [schema.core :as s]
    [schema.experimental.generators :as s-gen]))
