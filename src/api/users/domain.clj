@@ -11,6 +11,15 @@
    [clojure.set :refer [rename-keys]]
    [schema.core :refer [defschema Bool optional-key maybe]]))
 
+(def password-confirmation-does-not-match-msg
+  "password confirmation does not match")
+
+(defn validate-create-params
+  [{:keys [email password password_confirmation]}]
+  (cond-> nil
+    (not= password password_confirmation)
+    (assoc-in [:errors :password_confirmation] password-confirmation-does-not-match-msg)))
+
 (defschema ConfirmedAt
   (describe
    (maybe org.joda.time.DateTime)

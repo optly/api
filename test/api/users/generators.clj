@@ -22,4 +22,5 @@
   (s-gen/generator User leaf-generators))
 
 (def create-params
-  (s-gen/generator UserCreateParams leaf-generators))
+  (c-gen/fmap #(assoc % :password_confirmation (:password %))
+              (s-gen/generator UserCreateParams leaf-generators)))
